@@ -1,0 +1,83 @@
+name: Deploy Lambda
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: eu-north-1
+      STACK_NAME: LambdaVulnerabilityScannerStack
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Setup SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      - name: Determine credential method
+        id: creds_check
+        run: |
+          METHOD="none"
+          if [ -n "${{ secrets.AWS_ROLE_TO_ASSUME }}" ]; then METHOD="role"; fi
+          if [ -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ] && [ -n "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]; then
+            if [ "$METHOD" = "role" ]; then
+              echo "Both role and access keys provided; defaulting to role" >&2
+            else
+              METHOD="keys"
+            fi
+          fi
+          if [ "$METHOD" = "none" ]; then
+            echo "No AWS credentials provided. Set AWS_ROLE_TO_ASSUME or AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY secrets." >&2
+            exit 1
+          fi
+          echo "method=$METHOD" >> $GITHUB_OUTPUT
+          echo "Chosen credential method: $METHOD"
+
+      - name: Configure AWS credentials (role)
+        if: steps.creds_check.outputs.method == 'role'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION || env.AWS_REGION }}
+
+      - name: Configure AWS credentials (access keys)
+        if: steps.creds_check.outputs.method == 'keys'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION || env.AWS_REGION }}
+
+      - name: Show AWS identity (sanity check)
+        run: aws sts get-caller-identity
+
+      - name: SAM Build
+        run: sam build --use-container
+
+      - name: SAM Deploy
+        run: sam deploy --no-confirm-changeset --stack-name $STACK_NAME --capabilities CAPABILITY_IAM
+
+      - name: Output Endpoint
+        run: |
+          API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='HttpApiUrl'].OutputValue" --output text)
+          echo "HttpApiUrl=$API_URL" >> $GITHUB_OUTPUT
