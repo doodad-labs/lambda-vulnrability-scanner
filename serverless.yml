@@ -1,13 +1,14 @@
-service: clientos
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: doodadlabs
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: lambda-vulnrability-scanner
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: lambda-vulnrability-scanner
 
 provider:
   name: aws
-  runtime: nodejs22.x
+  runtime: nodejs20.x
 
 functions:
-  getOsInfo:
-    handler: handler.getOsInfo
-    events:
-      - http:
-          path: client/os
-          method: get
+  scan:
+    handler: handler.scan
