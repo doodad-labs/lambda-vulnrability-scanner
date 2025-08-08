@@ -1,0 +1,13 @@
+service: clientos
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+
+functions:
+  getOsInfo:
+    handler: handler.getOsInfo
+    events:
+      - http:
+          path: client/os
+          method: get
