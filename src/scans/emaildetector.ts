@@ -104,9 +104,7 @@ export default function scanForExposedEmails(
     _: URL,
     body: string
 ): ScanResult {
-    // Test case - should be removed in production
-    const testContent = `<p>Contact email: <span class="blockspam" aria-hidden="true">NO SPAM!</span> user@<!-- anti-spam -->domain.com</p>`;
-    const htmlContent = body + testContent;
+    const htmlContent = body;
 
     // Extract and validate emails
     const cleanedContent = cleanHtmlContent(htmlContent);
