@@ -1,5 +1,5 @@
 // Array of WordPress-related paths to fuzz with expected responses and messages
-const urlFuzzing = [
+const urlFuzzing: [string, number, string | null, string][] = [
     // Each entry contains: path, expected status code, expected response body snippet, and message
     ['/wp-login.php', 200, '<select name="wp_lang" id="language-switcher-locales">', 'Consider changing your /wp-login path'],
     ['/wp-admin', 200, '<select name="wp_lang" id="language-switcher-locales">', 'Consider changing your /wp-admin path'],
@@ -13,7 +13,7 @@ const urlFuzzing = [
  * @param {string} url - The URL to check
  * @returns {Promise<boolean>} - Returns true if WordPress patterns are found in the body
  */
-async function detectFromBody(url) {
+async function detectFromBody(url: string) {
     try {
         // Fetch the URL content
         const response = await fetch(url);
@@ -28,7 +28,7 @@ async function detectFromBody(url) {
         }
 
         return false;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching the URL:', error.message);
         return false;
     }
@@ -39,7 +39,7 @@ async function detectFromBody(url) {
  * @param {string} url - The base URL to test
  * @returns {Promise<Object>} - Returns an object with detection results and messages
  */
-export default async function(url) {
+export default async function(url: URL) {
     // First check for WordPress patterns in the main page body
     let found = await detectFromBody(url.origin);
     let messages = [
@@ -66,7 +66,7 @@ export default async function(url) {
                 }
 
                 return found;
-            } catch (error) {
+            } catch (error: any) {
                 console.error(`Error checking ${path}:`, error.message);
                 return false;
             }

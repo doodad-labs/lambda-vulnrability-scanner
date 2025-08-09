@@ -1,6 +1,6 @@
-import scanner from './scanner/index.mjs'
+import scanner from './scanner/index.js'
 
-export const scan = async (event) => {
+export const scan = async (event: any) => {
 
   let url;
 
@@ -22,6 +22,8 @@ export const scan = async (event) => {
   }
 
   const results = await scanner(url);
+
+  console.log(results);
 
   return await fetch('http://localhost:5173/scan/submit', {
     method: 'POST',

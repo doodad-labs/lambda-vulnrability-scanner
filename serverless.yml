@@ -11,4 +11,4 @@ provider:
 
 functions:
   scan:
-    handler: handler.scan
+    handler: dist/handler.scan

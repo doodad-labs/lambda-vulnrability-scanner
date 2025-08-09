@@ -1,4 +1,4 @@
-const urlFuzzing = [
+const urlFuzzing: string[] = [
     // Basic directory traversals
     '/../../../../etc/passwd',
     '/../../../etc/passwd',
@@ -48,9 +48,9 @@ const urlFuzzing = [
     '/C:/windows/win.ini'
 ];
 
-export default async function(url) {
-    let found = false;
-    let messages = []
+export default async function(url: URL) {
+    let found: boolean = false;
+    let messages: string[] = []
 
     const results = await Promise.allSettled(
         urlFuzzing.map(async (path) => {

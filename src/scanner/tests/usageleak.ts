@@ -1,7 +1,7 @@
 
 
 // Get Server/Software version from response headers
-async function detectFromHeader(url) {
+async function detectFromHeader(url: URL) {
     try {
         const response = await fetch(url);
         const headers = response.headers;
@@ -12,8 +12,8 @@ async function detectFromHeader(url) {
             'X-Varnish', 'X-Served-By'
         ];
 
-        let found = false;
-        let messages = [];
+        let found: boolean = false;
+        let messages: string[] = [];
 
         techHeaders.forEach(header => {
             const value = headers.get(header);
@@ -29,9 +29,9 @@ async function detectFromHeader(url) {
     }
 }
 
-export default async function(url) {
-    let found = false;
-    let messages = []
+export default async function(url: URL) {
+    let found: boolean = false;
+    let messages: string[] = [];
 
     const results = await Promise.allSettled([
         detectFromHeader(url)
