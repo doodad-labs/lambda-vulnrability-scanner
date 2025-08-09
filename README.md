@@ -6,11 +6,12 @@ A **serverless AWS Lambda function** designed to scan web applications for secur
 
 | Check Name               | Description                                                                 | Severity   | Implementation File |
 |--------------------------|-----------------------------------------------------------------------------|------------|---------------------|
-| WordPress Detection      | Detects if a website is built with WordPress.                              | `minor`    | [`wordpress.ts`](./src/scans/wordpress.ts) |
-| File Traversal           | Identifies potential directory traversal vulnerabilities.                  | `critical` | [`filetraversal.ts`](./src/scans/filetraversal.ts) |
-| Software Usage           | Analyzes libraries and technologies used by the website.                   | `info`     | [`usageleak.ts`](./src/scans/usageleak.ts) |
-| Outdated Software        | Detects outdated software versions with known vulnerabilities.             | `moderate` | [`outdated/`](./src/scans/outdated) |
-| HTTP Upgrade            | Verifies if the site enforces HTTPS by redirecting HTTP traffic.          | `high`     | [`httpupgrade.ts`](./src/scans/httpupgrade.ts) |
+| WordPress Detection      | Detects if a website is built with WordPress.                               | `minor`    | [`wordpress.ts`](./src/scans/wordpress.ts) |
+| File Traversal           | Identifies potential directory traversal vulnerabilities.                   | `critical` | [`filetraversal.ts`](./src/scans/filetraversal.ts) |
+| Software Usage           | Analyzes libraries and technologies used by the website.                    | `info`     | [`usageleak.ts`](./src/scans/usageleak.ts) |
+| Outdated Software        | Detects outdated software versions with known vulnerabilities.              | `moderate` | [`outdated/`](./src/scans/outdated) |
+| HTTP Upgrade             | Verifies if the site enforces HTTPS by redirecting HTTP traffic.            | `high`     | [`httpupgrade.ts`](./src/scans/httpupgrade.ts) |
+| Email Detector           | Scrape for non obfuscated email, showing emails exposed to bots.            | `minor`    | [`emaildetetor.ts`](./src/scans/emaildetector.ts) |
 
 ## **Tech Stack**  
 
