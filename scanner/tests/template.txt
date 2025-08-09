@@ -1,0 +1,10 @@
+export default async function(url) {
+    let found = false;
+    let messages = []
+
+    // Return results
+    return {
+        found: found,
+        messages: messages.length > 0 ? messages : ['No vulnerabilities found']
+    }
+}
