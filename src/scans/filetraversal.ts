@@ -27,7 +27,7 @@ const FILE_TRAVERSAL_PATTERNS: string[] = [
     '/../../../etc/passwd%00.txt',
 
     // Mixed encoding and slashes
-    '/..\/..\/..\/etc/passwd',
+    '/..\\/..\\/..\\/etc/passwd',
     '/..%5c..%2f..%5cetc%2fpasswd',
 
     // UTF-8/Unicode variations

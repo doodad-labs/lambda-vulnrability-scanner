@@ -1,4 +1,4 @@
-import { ScanResult } from "./types/scans";
+import { ScanResult, VulnerabilityResult } from "./types/scans";
 import fetch from "./utils/fetch";
 
 import wordpress from "./scans/wordpress";
@@ -6,6 +6,7 @@ import filetraversal from './scans/filetraversal';
 import usageleak from "./scans/usageleak";
 import outdated from "./scans/outdated";
 import httpupgrade from "./scans/httpupgrade";
+import emailDetector from "./scans/emaildetector";
 
 /**
  * Vulnerability severity levels:
@@ -18,7 +19,7 @@ import httpupgrade from "./scans/httpupgrade";
 
 type ScanDefinition = {
     name: string;
-    func: (url: URL, body: string, headers: Headers) => Promise<ScanResult>;
+    func: (url: URL, body: string, headers: Headers) => Promise<ScanResult> | ScanResult;
     severity: 'info' | 'minor' | 'moderate' | 'high' | 'critical';
 };
 
@@ -48,6 +49,11 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
         name: 'HTTP Upgrade',
         func: httpupgrade,
         severity: 'high'
+    },
+    {
+        name: 'Email Address Detection',
+        func: emailDetector,
+        severity: 'minor'
     }
 ];
 
@@ -56,7 +62,7 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
  * @param url The target URL to scan
  * @returns Array of scan results with severity and findings
  */
-export default async function runSecurityScans(url: URL) {
+export default async function runSecurityScans(url: URL): Promise<VulnerabilityResult[]> {
     // Fetch target resources once to avoid redundant requests
     const [body, headers] = await fetchTargetResources(url);
     if (!body || !headers) {
@@ -101,13 +107,7 @@ async function executeAllScans(
  */
 function formatResults(
     results: PromiseSettledResult<ScanResult>[]
-): Array<{
-    name: string;
-    severity: string;
-    success: boolean;
-    found: boolean;
-    messages: string[] | string;
-}> {
+): VulnerabilityResult[] {
     return results.map((result, index) => ({
         name: SCAN_CONFIGURATIONS[index].name,
         severity: SCAN_CONFIGURATIONS[index].severity,

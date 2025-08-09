@@ -1,16 +1,18 @@
 import scanner from './scanner';
+import Event from './types/events';
+import { VulnerabilityResult } from './types/scans';
 
 //const SCAN_RESULTS_SUBMISSION_URL = 'https://doodadlabs.org/scan/submit';
 const SCAN_RESULTS_SUBMISSION_URL = 'http://localhost:5173/scan/submit';
 
-export const scan = async (event: any) => {
+export const scan = async (event: Event) => {
 
   // Validate and parse the input URL
   let targetUrl;
   try {
     targetUrl = new URL(event.url);
   } catch (error) {
-    console.error('Invalid URL provided:', event.url);
+    console.error('Invalid URL provided:', event.url, error);
     return submitFailureReport({
       email: event.email,
       url: event.url,
@@ -30,7 +32,11 @@ export const scan = async (event: any) => {
   }
 
   // Perform the scan
+  const start = performance.now();
   const scanResults = await scanner(targetUrl);
+  const duration = performance.now() - start;
+
+  console.log(`Scan completed in ${duration.toFixed(2)}ms`);
   console.log(scanResults)
 
   // Submit the results
@@ -38,6 +44,7 @@ export const scan = async (event: any) => {
     email: event.email,
     url: targetUrl.origin,
     results: scanResults,
+    elapsed: duration,
   });
 };
 
@@ -60,7 +67,8 @@ async function checkWebsiteAvailability(url: string): Promise<boolean> {
 async function submitScanResults(data: {
   email: string;
   url: string;
-  results: any;
+  results: VulnerabilityResult[];
+  elapsed: number;
 }) {
   try {
     await fetch(SCAN_RESULTS_SUBMISSION_URL, {
@@ -78,7 +86,7 @@ async function submitScanResults(data: {
 async function submitFailureReport(data: {
   email: string;
   url: string;
-  error: any;
+  error: string;
 }) {
   try {
     await fetch(SCAN_RESULTS_SUBMISSION_URL, {

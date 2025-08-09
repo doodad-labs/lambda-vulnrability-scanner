@@ -47,14 +47,14 @@ export default async function detectUsageLeak(
     body: string,
     headers: Headers
 ): Promise<ScanResult> {
-    const headerResults = await checkSecurityHeaders(headers);
+    const headerResults = checkSecurityHeaders(headers);
     return compileDetectionResults([headerResults]);
 }
 
 /**
  * Checks for sensitive information in HTTP headers
  */
-async function checkSecurityHeaders(headers: Headers): Promise<ScanResult> {
+function checkSecurityHeaders(headers: Headers): ScanResult {
     try {
         let vulnerabilitiesFound = false;
         const vulnerabilityMessages: string[] = [];

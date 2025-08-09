@@ -49,6 +49,6 @@ function formatUpgradeResults(upgradeRequired: boolean): ScanResult {
 
     return {
         found: false,
-        messages: ['No HTTP upgrade vulnerabilities detected']
+        messages: ['No HTTP upgrade issues detected']
     };
 }

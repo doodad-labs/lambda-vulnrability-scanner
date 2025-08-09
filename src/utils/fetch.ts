@@ -4,8 +4,8 @@ export default async function fetch(
   input: RequestInfo | URL,
   init?: RequestInit & { timeout?: number }
 ): Promise<Response> {
-  // Default timeout of 2 seconds (2000ms)
-  const timeout = init?.timeout ?? 2000;
+
+  const timeout = init?.timeout ?? 5000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -22,11 +22,9 @@ export default async function fetch(
     clearTimeout(timeoutId);
     
     if ((error as Error).name === 'AbortError') {
-      console.error(`Fetch timed out after ${timeout}ms`);
       throw new Error(`Request timed out after ${timeout}ms`);
     }
 
-    console.error('Fetch failed:', error);
     throw error;
   }
 }
