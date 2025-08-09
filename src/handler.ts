@@ -2,8 +2,8 @@ import scanner from './scanner';
 import Event from './types/events';
 import { VulnerabilityResult } from './types/scans';
 
-//const SCAN_RESULTS_SUBMISSION_URL = 'https://doodadlabs.org/scan/submit';
-const SCAN_RESULTS_SUBMISSION_URL = 'http://localhost:5173/scan/submit';
+const SCAN_RESULTS_SUBMISSION_URL = 'https://doodadlabs.org/scan/submit';
+//const SCAN_RESULTS_SUBMISSION_URL = 'http://localhost:5173/scan/submit';
 
 export const scan = async (event: Event) => {
 
