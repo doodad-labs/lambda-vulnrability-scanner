@@ -18,9 +18,8 @@ export const scan = async (event: any) => {
   if (!urlReachable) return;
 
   const results = await scanner(url);
-  console.log(results);
 
-  return await fetch('http://localhost:5173/scan/submit', {
+  return await fetch('https://doodadlabs.org/scan/submit', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
