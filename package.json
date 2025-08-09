@@ -1,6 +1,18 @@
 {
     "scripts": {
         "build": "tsc",
-        "dev": "serverless dev"
+        "clean": "rimraf dist",
+        "dev": "npm run clean && concurrently \"tsc --watch\" \"node scripts/watch-clean.js\" \"serverless dev\" -n \"ts,rf,λf\""
+    },
+    "devDependencies": {
+        "@types/jest": "^30.0.0",
+        "chokidar": "^4.0.3",
+        "concurrently": "^9.2.0",
+        "glob": "^11.0.3",
+        "jest": "^30.0.5",
+        "rimraf": "^6.0.1",
+        "serverless": "^4.18.0",
+        "ts-jest": "^29.4.1",
+        "typescript": "^5.9.2"
     }
 }

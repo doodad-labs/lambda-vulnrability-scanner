@@ -1,4 +1,6 @@
-export default async function(url: URL) {
+import { ScanResult} from '../types/scans';
+
+export default async function(url: URL, body: string, headers: Headers): Promise<ScanResult> {
     let found: boolean = false;
     let messages: string[] = []
 

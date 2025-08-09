@@ -1,6 +1,10 @@
-import fetch from "../../utils/fetch";
+import fetch from "../utils/fetch";
+import { ScanResult } from '../types/scans'
 
-const urlFuzzing: string[] = [
+/**
+ * Common file paths and traversal patterns to test for
+ */
+const FILE_TRAVERSAL_PATTERNS: string[] = [
     // Basic directory traversals
     '/../../../../etc/passwd',
     '/../../../etc/passwd',
@@ -50,29 +54,50 @@ const urlFuzzing: string[] = [
     '/C:/windows/win.ini'
 ];
 
-export default async function(url: URL) {
-    let found: boolean = false;
-    let messages: string[] = []
+/**
+ * Scans for file traversal vulnerabilities by testing various path patterns
+ * @param url The target URL to test against
+ * @returns Object containing detection results and messages
+ */
+export default async function detectFileTraversal(url: URL): Promise<ScanResult> {
+    const testResults = await testTraversalPatterns(url);
+    return compileTraversalResults(testResults);
+}
 
-    const results = await Promise.allSettled(
-        urlFuzzing.map(async (path) => {
-            const response = await fetch(url.origin + path);
-            if (response.status === 200) {
-                return true;
-            }
+/**
+ * Tests all file traversal patterns against the target URL
+ */
+async function testTraversalPatterns(url: URL): Promise<PromiseSettledResult<boolean>[]> {
+    return Promise.allSettled(
+        FILE_TRAVERSAL_PATTERNS.map(async (path) => {
+            const response = await fetch(`${url.origin}${path}`);
+            return response.status === 200;
         })
     );
+}
+
+/**
+ * Compiles test results into a final detection report
+ */
+function compileTraversalResults(
+    results: PromiseSettledResult<boolean>[]
+): ScanResult {
+    let vulnerabilityFound = false;
+    const detectionMessages: string[] = [];
 
     results.forEach((result, index) => {
         if (result.status === 'fulfilled' && result.value) {
-            found = true;
-            messages.push(`Found potential traversal at: ${urlFuzzing[index]}`);
+            vulnerabilityFound = true;
+            detectionMessages.push(
+                `Potential file traversal vulnerability detected at: ${FILE_TRAVERSAL_PATTERNS[index]}`
+            );
         }
     });
 
-    // Return results
     return {
-        found: found,
-        messages: messages.length > 0 ? messages : ['No vulnerabilities found']
-    }
+        found: vulnerabilityFound,
+        messages: detectionMessages.length > 0
+            ? detectionMessages
+            : ['No file traversal vulnerabilities detected']
+    };
 }

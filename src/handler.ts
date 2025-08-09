@@ -1,4 +1,4 @@
-import scanner from './scanner/index.js';
+import scanner from './scanner';
 
 //const SCAN_RESULTS_SUBMISSION_URL = 'https://doodadlabs.org/scan/submit';
 const SCAN_RESULTS_SUBMISSION_URL = 'http://localhost:5173/scan/submit';
