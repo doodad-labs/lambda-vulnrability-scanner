@@ -39,20 +39,20 @@ async function runOutdatedScanners(
 function compileOutdatedResults(
     results: PromiseSettledResult<ScanResult>[]
 ): ScanResult {
-    let anyFound = false;
-    const allMessages: string[] = [];
+    let found = false;
+    const messages: string[] = [];
 
     results.forEach(result => {
-        if (result.status === 'fulfilled') {
-            anyFound = anyFound || result.value.found;
-            allMessages.push(...result.value.messages);
+        if (result.status === 'fulfilled' && result.value.found) {
+            found = true
+            messages.push(...result.value.messages);
         }
     });
 
     return {
-        found: anyFound,
-        messages: allMessages.length > 0
-            ? allMessages
+        found: found,
+        messages: messages.length > 0
+            ? messages
             : ['No outdated software detected']
     };
 }

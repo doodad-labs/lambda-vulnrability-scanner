@@ -140,10 +140,7 @@ function formatResults(check: VersionCheckResult): ScanResult {
     return {
         found: true,
         messages: [
-            `Outdated jQuery versions detected: ${check.outdatedVersions.join(', ')}`,
-            check.currentVersion
-                ? `Latest version is ${check.currentVersion}`
-                : 'Could not determine latest version'
+            `Outdated jQuery versions detected: ${check.outdatedVersions.join(', ')}. Latest: ${check.currentVersion}`
         ]
     };
 }
