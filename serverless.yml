@@ -7,7 +7,7 @@ service: lambda-vulnrability-scanner
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs22.x
 
 functions:
   scan:
