@@ -1,3 +1,5 @@
+import fetch from "../../utils/fetch";
+
 // Array of WordPress-related paths to fuzz with expected responses and messages
 const urlFuzzing: [string, number, string | null, string][] = [
     // Each entry contains: path, expected status code, expected response body snippet, and message
@@ -13,11 +15,8 @@ const urlFuzzing: [string, number, string | null, string][] = [
  * @param {string} url - The URL to check
  * @returns {Promise<boolean>} - Returns true if WordPress patterns are found in the body
  */
-async function detectFromBody(url: string) {
+async function detectFromBody(html: string) {
     try {
-        // Fetch the URL content
-        const response = await fetch(url);
-        const html = await response.text();
 
         // Check for common WordPress patterns in the HTML
         if (html.includes('wp-content') || 
@@ -39,9 +38,9 @@ async function detectFromBody(url: string) {
  * @param {string} url - The base URL to test
  * @returns {Promise<Object>} - Returns an object with detection results and messages
  */
-export default async function(url: URL) {
+export default async function(url: URL, body: string) {
     // First check for WordPress patterns in the main page body
-    let found = await detectFromBody(url.origin);
+    let found = await detectFromBody(body);
     let messages = [
         ...(found ? ['Found WordPress files in the response body.'] : [])
     ]

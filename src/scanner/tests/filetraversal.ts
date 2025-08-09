@@ -1,3 +1,5 @@
+import fetch from "../../utils/fetch";
+
 const urlFuzzing: string[] = [
     // Basic directory traversals
     '/../../../../etc/passwd',

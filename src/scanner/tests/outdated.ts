@@ -1,3 +1,5 @@
+import fetch from "../../utils/fetch";
+
 async function jquery(body: string) {
     try {
         let found = false;
@@ -139,15 +141,9 @@ async function lodash(body: string) {
     }
 }
 
-export default async function(url: URL) {
+export default async function(url: URL, body: string) {
     let found: boolean = false;
     let messages: string[] = [];
-
-    const body = await fetch(url.origin).then(res => res.text()).catch(()=>null);
-
-    if (!body) {
-        return { found: false, messages: [] };
-    }
 
     const results = await Promise.allSettled([
         jquery(body),

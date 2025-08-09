@@ -1,3 +1,5 @@
+import fetch from "../../utils/fetch";
+
 export default async function (url: URL) {
     let found: boolean = false;
     let messages: string[] = []

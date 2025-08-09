@@ -1,8 +1,10 @@
-import wordpress from "./tests/wordpress.js";
-import filetraversal from './tests/filetraversal.js'
-import usageleak from "./tests/usageleak.js";
-import outdated from "./tests/outdated.js";
-import httpupgrade from "./tests/httpupgrade.js";
+import wordpress from "./tests/wordpress";
+import filetraversal from './tests/filetraversal'
+import usageleak from "./tests/usageleak";
+import outdated from "./tests/outdated";
+import httpupgrade from "./tests/httpupgrade";
+
+import fetch from "../utils/fetch";
 
 // Severity: minor, moderate, high, critical
 // minor: Low impact (e.g., information disclosure)
@@ -13,8 +15,8 @@ import httpupgrade from "./tests/httpupgrade.js";
 // Function, Name, Severity
 const tests: {
     name: string;
-    func: (url: URL) => Promise<{ found: boolean; messages: string[] }>;
-    severity: 'minor' | 'moderate' | 'high' | 'critical';
+    func: (url: URL, body: string, headers: Headers) => Promise<{ found: boolean; messages: string[] }>;
+    severity: 'info' | 'minor' | 'moderate' | 'high' | 'critical';
 }[] = [
     {
         "name": 'WordPress Detection',
@@ -29,7 +31,7 @@ const tests: {
     {
         "name": 'Software Usage Leaks',
         "func": usageleak,
-        "severity": "moderate"
+        "severity": "info"
     },
     {
         "name": 'Outdated Software',
@@ -45,8 +47,18 @@ const tests: {
 
 export default async function(url: URL) {
 
+    // get body and headers so that the tests that only need the body or headers dont make redundant requests
+    const [body, headers] = await fetch(url.origin).then(res => {
+        return Promise.all([res.text(), res.headers]);
+    }).catch(err => [null, null]);
+
+    if (!body || !headers) {
+        console.error('Failed to retrieve body or headers:', { body, headers });
+        return [];
+    }
+
     const results = await Promise.allSettled(
-        tests.map(test => test.func(url))
+        tests.map(test => test.func(url, body, headers))
     );
 
     return results.map((result, index) => {

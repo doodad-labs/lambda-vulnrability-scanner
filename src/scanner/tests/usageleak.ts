@@ -1,25 +1,27 @@
 
 
 // Get Server/Software version from response headers
-async function detectFromHeader(url: URL) {
+async function detectFromHeader(headers: Headers) {
     try {
-        const response = await fetch(url);
-        const headers = response.headers;
         
         const techHeaders = [
-            'Server', 'X-Powered-By', 'X-AspNet-Version',
-            'X-Backend-Server', 'X-Generator',
-            'X-Varnish', 'X-Served-By'
+            ['Server', 'Server {} was leaked, this could lead to exploiting known vulnerabilities.'], 
+            ['X-Powered-By', 'X-Powered-By {} was leaked, this could lead to exploiting known vulnerabilities.'], 
+            ['X-AspNet-Version', 'X-AspNet-Version {} was leaked, this could lead to exploiting known vulnerabilities.'],
+            ['X-Backend-Server', 'X-Backend-Server {} was leaked, this could lead to exploiting known vulnerabilities.'], 
+            ['X-Generator', 'X-Generator {} was leaked, this could lead to exploiting known vulnerabilities.'],
+            ['X-Varnish', 'X-Varnish {} was leaked, this could lead to exploiting known vulnerabilities.'], 
+            ['X-Served-By', 'X-Served-By {} was leaked, this could lead to exploiting known vulnerabilities.']
         ];
 
         let found: boolean = false;
         let messages: string[] = [];
 
         techHeaders.forEach(header => {
-            const value = headers.get(header);
+            const value = headers.get(header[0]);
             if (value) {
                 found = true;
-                messages.push(`Found ${header}: ${value}`);
+                messages.push(header[1].replace('{}', value));
             }
         });
 
@@ -29,12 +31,12 @@ async function detectFromHeader(url: URL) {
     }
 }
 
-export default async function(url: URL) {
+export default async function(url: URL, body: string, headers: Headers) {
     let found: boolean = false;
     let messages: string[] = [];
 
     const results = await Promise.allSettled([
-        detectFromHeader(url)
+        detectFromHeader(headers)
     ]);
 
     results.forEach(result => {
