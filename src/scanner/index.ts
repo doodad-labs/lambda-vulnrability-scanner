@@ -2,6 +2,7 @@ import wordpress from "./tests/wordpress.js";
 import filetraversal from './tests/filetraversal.js'
 import usageleak from "./tests/usageleak.js";
 import outdated from "./tests/outdated.js";
+import httpupgrade from "./tests/httpupgrade.js";
 
 // Severity: minor, moderate, high, critical
 // minor: Low impact (e.g., information disclosure)
@@ -34,6 +35,11 @@ const tests: {
         "name": 'Outdated Software',
         "func": outdated,
         "severity": "moderate"
+    },
+    {
+        "name": 'HTTP Upgrade',
+        "func": httpupgrade,
+        "severity": "high"
     }
 ]
 

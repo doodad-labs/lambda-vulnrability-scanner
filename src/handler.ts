@@ -11,18 +11,13 @@ export const scan = async (event: any) => {
     return;
   }
 
-  const email = event.email;
-
   const urlReachable = await fetch(url.origin, { method: 'HEAD' })
     .then(response => response.ok)
     .catch(() => false);
 
-  if (!urlReachable) {
-    return;
-  }
+  if (!urlReachable) return;
 
   const results = await scanner(url);
-
   console.log(results);
 
   return await fetch('http://localhost:5173/scan/submit', {
@@ -31,7 +26,7 @@ export const scan = async (event: any) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      email: email,
+      email: event.email,
       url: url.origin,
       results,
     }),
