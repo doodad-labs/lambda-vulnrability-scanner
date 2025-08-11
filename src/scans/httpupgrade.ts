@@ -1,12 +1,12 @@
 import fetch from "../utils/fetch";
-import { ScanResult} from '../types/scans';
+import { IndividualScanResult} from '../types/scans';
 
 /**
  * Checks if a website properly redirects HTTP requests to HTTPS
  * @param url The target URL to test (HTTPS version)
  * @returns Object containing detection results and messages
  */
-export default async function checkHttpUpgrade(url: URL): Promise<ScanResult> {
+export default async function checkHttpUpgrade(url: URL): Promise<IndividualScanResult> {
     const httpUrl = createHttpVersion(url);
     const upgradeRequired = await testHttpUpgrade(httpUrl);
 
@@ -39,7 +39,7 @@ async function testHttpUpgrade(httpUrl: URL): Promise<boolean> {
 /**
  * Formats the test results into a standardized response
  */
-function formatUpgradeResults(upgradeRequired: boolean): ScanResult {
+function formatUpgradeResults(upgradeRequired: boolean): IndividualScanResult {
     if (upgradeRequired) {
         return {
             found: true,

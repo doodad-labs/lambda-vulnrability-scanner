@@ -1,4 +1,4 @@
-import { ScanResult } from '../types/scans'
+import { IndividualScanResult } from '../types/scans'
 
 type HeaderCheck = {
     name: string;
@@ -46,7 +46,7 @@ export default async function detectUsageLeak(
     url: URL,
     body: string,
     headers: Headers
-): Promise<ScanResult> {
+): Promise<IndividualScanResult> {
     const headerResults = checkSecurityHeaders(headers);
     return compileDetectionResults([headerResults]);
 }
@@ -54,7 +54,7 @@ export default async function detectUsageLeak(
 /**
  * Checks for sensitive information in HTTP headers
  */
-function checkSecurityHeaders(headers: Headers): ScanResult {
+function checkSecurityHeaders(headers: Headers): IndividualScanResult {
     try {
         let vulnerabilitiesFound = false;
         const vulnerabilityMessages: string[] = [];
@@ -81,9 +81,9 @@ function checkSecurityHeaders(headers: Headers): ScanResult {
  * Compiles multiple detection results into a single report
  */
 function compileDetectionResults(
-    results: ScanResult[]
-): ScanResult {
-    const combinedResult: ScanResult = {
+    results: IndividualScanResult[]
+): IndividualScanResult {
+    const combinedResult: IndividualScanResult = {
         found: false,
         messages: []
     };

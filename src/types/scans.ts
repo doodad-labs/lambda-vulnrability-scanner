@@ -1,10 +1,10 @@
-export interface ScanResult {
+export interface IndividualScanResult {
     found: boolean;
     messages: string[];
     elapsed?: number;
 };
 
-export interface VulnerabilityResult {
+export interface ScanResult {
     name: string;
     severity: string;
     success: boolean;

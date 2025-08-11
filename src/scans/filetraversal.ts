@@ -1,5 +1,5 @@
 import fetch from "../utils/fetch";
-import { ScanResult } from '../types/scans'
+import { IndividualScanResult } from '../types/scans'
 
 /**
  * Common file paths and traversal patterns to test for
@@ -59,7 +59,7 @@ const FILE_TRAVERSAL_PATTERNS: string[] = [
  * @param url The target URL to test against
  * @returns Object containing detection results and messages
  */
-export default async function detectFileTraversal(url: URL): Promise<ScanResult> {
+export default async function detectFileTraversal(url: URL): Promise<IndividualScanResult> {
     const testResults = await testTraversalPatterns(url);
     return compileTraversalResults(testResults);
 }
@@ -81,7 +81,7 @@ async function testTraversalPatterns(url: URL): Promise<PromiseSettledResult<boo
  */
 function compileTraversalResults(
     results: PromiseSettledResult<boolean>[]
-): ScanResult {
+): IndividualScanResult {
     let vulnerabilityFound = false;
     const detectionMessages: string[] = [];
 

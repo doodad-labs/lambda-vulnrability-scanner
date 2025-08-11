@@ -1,4 +1,4 @@
-import { ScanResult, VulnerabilityResult } from "./types/scans";
+import { IndividualScanResult, ScanResult } from "./types/scans";
 import fetch from "./utils/fetch";
 
 import wordpress from "./scans/wordpress";
@@ -19,7 +19,7 @@ import emailDetector from "./scans/emaildetector";
 
 type ScanDefinition = {
     name: string;
-    func: (url: URL, body: string, headers: Headers) => Promise<ScanResult> | ScanResult;
+    func: (url: URL, body: string, headers: Headers) => Promise<IndividualScanResult> | IndividualScanResult;
     severity: 'info' | 'minor' | 'moderate' | 'high' | 'critical';
 };
 
@@ -62,7 +62,7 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
  * @param url The target URL to scan
  * @returns Array of scan results with severity and findings
  */
-export default async function runSecurityScans(url: URL): Promise<{result: VulnerabilityResult[], error: string | null}> {
+export default async function runSecurityScans(url: URL): Promise<{result: ScanResult[], error: string | null}> {
     // Fetch target resources once to avoid redundant requests
     const [body, headers, redirected] = await fetchTargetResources(url);
 
@@ -130,7 +130,7 @@ async function executeAllScans(
     url: URL,
     body: string,
     headers: Headers
-): Promise<PromiseSettledResult<ScanResult>[]> {
+): Promise<PromiseSettledResult<IndividualScanResult>[]> {
     return Promise.allSettled(
         SCAN_CONFIGURATIONS.map(scan => scan.func(url, body, headers))
     );
@@ -140,8 +140,8 @@ async function executeAllScans(
  * Formats raw scan results with additional metadata
  */
 function formatResults(
-    results: PromiseSettledResult<ScanResult>[]
-): VulnerabilityResult[] {
+    results: PromiseSettledResult<IndividualScanResult>[]
+): ScanResult[] {
     return results.map((result, index) => ({
         name: SCAN_CONFIGURATIONS[index].name,
         severity: SCAN_CONFIGURATIONS[index].severity,

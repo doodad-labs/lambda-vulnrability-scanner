@@ -1,10 +1,10 @@
-import { ScanResult } from "../../types/scans";
+import { IndividualScanResult } from "../../types/scans";
 
 import jquery from "./jquery";
 import lodash from "./lodash";
 import bootstrap from "./bootstrap";
 
-type OutdatedScanner = (body: string) => Promise<ScanResult>;
+type OutdatedScanner = (body: string) => Promise<IndividualScanResult>;
 
 /**
  * Scans HTML content for outdated JavaScript libraries
@@ -15,7 +15,7 @@ type OutdatedScanner = (body: string) => Promise<ScanResult>;
 export default async function detectOutdatedLibraries(
     url: URL,
     body: string
-): Promise<ScanResult> {
+): Promise<IndividualScanResult> {
     const outdatedScanners: OutdatedScanner[] = [jquery, lodash, bootstrap];
     const scanResults = await runOutdatedScanners(outdatedScanners, body);
 
@@ -28,7 +28,7 @@ export default async function detectOutdatedLibraries(
 async function runOutdatedScanners(
     scanners: OutdatedScanner[],
     body: string
-): Promise<PromiseSettledResult<ScanResult>[]> {
+): Promise<PromiseSettledResult<IndividualScanResult>[]> {
     return Promise.allSettled(
         scanners.map(scanner => scanner(body))
     );
@@ -38,8 +38,8 @@ async function runOutdatedScanners(
  * Compiles results from all outdated library scanners
  */
 function compileOutdatedResults(
-    results: PromiseSettledResult<ScanResult>[]
-): ScanResult {
+    results: PromiseSettledResult<IndividualScanResult>[]
+): IndividualScanResult {
     let found = false;
     const messages: string[] = [];
 

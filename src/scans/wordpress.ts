@@ -1,5 +1,5 @@
 import fetch from "../utils/fetch";
-import { ScanResult } from '../types/scans'
+import { IndividualScanResult } from '../types/scans'
 
 type WordPressPathCheck = {
     path: string;
@@ -50,7 +50,7 @@ const WORDPRESS_PATH_CHECKS: WordPressPathCheck[] = [
 export default async function detectWordPress(
     url: URL,
     pageContent: string
-): Promise<ScanResult> {
+): Promise<IndividualScanResult> {
     const bodyDetection = detectFromPageContent(pageContent);
     const pathChecks = await checkWordPressPaths(url);
 
@@ -126,7 +126,7 @@ async function testWordPressPath(
 function compileWordPressResults(
     bodyDetection: { found: boolean; message: string | null },
     pathChecks: { found: boolean; messages: string[] }
-): ScanResult {
+): IndividualScanResult {
     const allMessages = [
         ...(bodyDetection.found && bodyDetection.message ? [bodyDetection.message] : []),
         ...pathChecks.messages

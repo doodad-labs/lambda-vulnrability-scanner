@@ -1,4 +1,4 @@
-import { ScanResult } from '../types/scans';
+import { IndividualScanResult } from '../types/scans';
 import { JSDOM } from 'jsdom';
 
 // Constants for email validation and extraction
@@ -103,7 +103,7 @@ function extractEmailsFromText(text: string): string[] {
 export default function scanForExposedEmails(
     _: URL,
     body: string
-): ScanResult {
+): IndividualScanResult {
     const htmlContent = body;
 
     // Extract and validate emails
