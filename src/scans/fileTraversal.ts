@@ -32,7 +32,7 @@ const FILE_TRAVERSAL_PATTERNS: string[] = [
 
     // UTF-8/Unicode variations
     '/%c0%ae%c0%ae/%c0%ae%c0%ae/etc/passwd',
-    '/%ef%bc%8f..%ef%bc%8f..%ef%bc%8fetc%ef%bc%8fpasswd', // Fullwidth characters
+    '/%ef%bc%8f..%ef%bc%8f..%ef%bc%8fetc%ef%bc%8fpasswd', // Full width characters
 
     // Interesting file targets (both Unix and Windows)
     '/../../../../etc/shadow',

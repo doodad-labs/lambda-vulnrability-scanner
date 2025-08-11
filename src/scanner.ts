@@ -2,11 +2,11 @@ import { IndividualScanResult, ScanResult } from "./types/scans";
 import fetch from "./utils/fetch";
 
 import wordpress from "./scans/wordpress";
-import filetraversal from './scans/filetraversal';
-import usageleak from "./scans/usageleak";
+import fileTraversal from './scans/fileTraversal';
+import usageLeak from "./scans/usageLeak";
 import outdated from "./scans/outdated";
-import httpupgrade from "./scans/httpupgrade";
-import emailDetector from "./scans/emaildetector";
+import httpUpgrade from "./scans/httpUpgrade";
+import emailDetector from "./scans/emailDetector";
 
 /**
  * Vulnerability severity levels:
@@ -32,12 +32,12 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
     },
     {
         name: 'File Traversal',
-        func: filetraversal,
+        func: fileTraversal,
         severity: 'critical'
     },
     {
         name: 'Software Usage Leaks',
-        func: usageleak,
+        func: usageLeak,
         severity: 'info'
     },
     {
@@ -47,7 +47,7 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
     },
     {
         name: 'HTTP Upgrade',
-        func: httpupgrade,
+        func: httpUpgrade,
         severity: 'high'
     },
     {
@@ -149,6 +149,6 @@ function formatResults(
         found: result.status === 'fulfilled' ? result.value.found : false,
         messages: result.status === 'fulfilled'
             ? result.value.messages
-            : ['Scan failed: No vulnerabilities found'],
+            : ['Scan failed'],
     }));
 }
