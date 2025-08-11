@@ -33,17 +33,32 @@ export const scan = async (event: Event) => {
 
   // Perform the scan
   const start = performance.now();
-  const scanResults = await scanner(targetUrl);
+  const { result, error } = await scanner(targetUrl).catch((error) => {
+    console.error('Scan failed:', error);
+    return {
+      result: [],
+      error: 'There was an error processing your request.',
+    };
+  });
   const duration = performance.now() - start;
 
   console.log(`Scan completed in ${duration.toFixed(2)}ms`);
-  console.log(scanResults)
+  console.log(result)
+
+  if (!result || error) {
+    console.error('Scan did not return valid results');
+    return submitFailureReport({
+      email: event.email,
+      url: event.url,
+      error: error ?? 'There was an error processing your request.',
+    });
+  }
 
   // Submit the results
   await submitScanResults({
     email: event.email,
     url: targetUrl.origin,
-    results: scanResults,
+    results: result,
     elapsed: duration,
   });
 };

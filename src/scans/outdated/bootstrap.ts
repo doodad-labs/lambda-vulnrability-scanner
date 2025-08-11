@@ -11,34 +11,34 @@ type VersionCheckResult = {
 };
 
 /**
- * Detects outdated Lodash versions in HTML content
+ * Detects outdated Bootstrap versions in HTML content
  */
-export default async function detectOutdatedLodash(
+export default async function detectOutdatedBootstrap(
     htmlContent: string
 ): Promise<DetectionResult> {
     try {
-        const lodashScriptUrls = findLodashScripts(htmlContent);
-        const detectedVersions = await getLodashVersions(lodashScriptUrls);
+        const bootstrapScriptUrls = findBootstrapScripts(htmlContent);
+        const detectedVersions = await getBootstrapVersions(bootstrapScriptUrls);
         const versionCheck = await checkVersionsAgainstLatest(detectedVersions);
 
         return formatResults(versionCheck);
     } catch (error) {
-        console.error('Lodash detection error:', error);
+        console.error('Bootstrap detection error:', error);
         return { found: false, messages: [] };
     }
 }
 
 /**
- * Finds Lodash script tags in HTML content
+ * Finds Bootstrap script tags in HTML content
  */
-function findLodashScripts(html: string): string[] {
+function findBootstrapScripts(html: string): string[] {
     const scriptRegex = /<script\b[^>]*src=["']([^"']*)["'][^>]*>/gi;
-    const lodashPattern = /(^|\/)(lodash|lodash\.min)(-[0-9.]+)?(\.min)?\.js($|\?|#)/i;
+    const bootstrapPattern = /(^|\/)(bootstrap|bootstrap\.min|bootstrap\.esm)(-[0-9.]+)?(\.min)?\.js($|\?|#)/i;
     const matches: string[] = [];
     let match;
 
     while ((match = scriptRegex.exec(html)) !== null) {
-        if (lodashPattern.test(match[1])) {
+        if (bootstrapPattern.test(match[1])) {
             matches.push(match[1]);
         }
     }
@@ -48,9 +48,9 @@ function findLodashScripts(html: string): string[] {
 }
 
 /**
- * Extracts Lodash versions from script files
+ * Extracts Bootstrap versions from script files
  */
-async function getLodashVersions(urls: string[]): Promise<Set<string>> {
+async function getBootstrapVersions(urls: string[]): Promise<Set<string>> {
     const versionResults = await Promise.allSettled(
         urls.map(async (url) => {
             try {
@@ -73,17 +73,17 @@ async function getLodashVersions(urls: string[]): Promise<Set<string>> {
 }
 
 /**
- * Extracts version numbers from Lodash script content
+ * Extracts version numbers from Bootstrap script content
  */
 function extractVersionsFromScript(content: string): Set<string> {
     const versions = new Set<string>();
 
-    // Check header comment format (specific to Lodash)
-    const headerCommentMatch = content.match(/ash\s+([0-9.]+)/i);
+    // Check header comment format (specific to Bootstrap)
+    const headerCommentMatch = content.match(/strap\sv+([0-9.]+)/i);
     if (headerCommentMatch?.[1]) versions.add(headerCommentMatch[1]);
 
     // Check version variable format
-    const versionVarMatch = content.match(/="([0-9.]+)"/);
+    const versionVarMatch = content.match(/"([0-9.]+)"}/);
     if (versionVarMatch?.[1]) versions.add(versionVarMatch[1]);
 
     return versions;
@@ -96,7 +96,7 @@ async function checkVersionsAgainstLatest(
     detectedVersions: Set<string>
 ): Promise<VersionCheckResult> {
     try {
-        const latestVersion = await fetchLatestLodashVersion();
+        const latestVersion = await fetchLatestBootstrapVersion();
         const outdated = latestVersion
             ? [...detectedVersions].filter(v => v !== latestVersion)
             : [];
@@ -114,11 +114,11 @@ async function checkVersionsAgainstLatest(
 }
 
 /**
- * Fetches latest Lodash version from npm registry
+ * Fetches latest Bootstrap version from npm registry
  */
-async function fetchLatestLodashVersion(): Promise<string | null> {
+async function fetchLatestBootstrapVersion(): Promise<string | null> {
     try {
-        const response = await fetch('https://registry.npmjs.org/lodash/latest');
+        const response = await fetch('https://registry.npmjs.org/bootstrap/latest');
         const data = await response.json();
         return data.version;
     } catch {
@@ -133,14 +133,14 @@ function formatResults(check: VersionCheckResult): DetectionResult {
     if (check.outdatedVersions.length === 0) {
         return {
             found: false,
-            messages: ['No outdated Lodash versions detected']
+            messages: ['No outdated Bootstrap versions detected']
         };
     }
 
     return {
         found: true,
         messages: [
-            `Outdated Lodash versions detected: ${check.outdatedVersions.join(', ')}. Latest: ${check.currentVersion}`,
+            `Outdated Bootstrap versions detected: ${check.outdatedVersions.join(', ')}. Latest: ${check.currentVersion}`
         ]
     };
 }

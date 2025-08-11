@@ -9,5 +9,5 @@ export interface VulnerabilityResult {
     severity: string;
     success: boolean;
     found: boolean;
-    messages: string[] | string;
+    messages: string[];
 }

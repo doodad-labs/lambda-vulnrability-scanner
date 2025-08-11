@@ -2,6 +2,7 @@ import { ScanResult } from "../../types/scans";
 
 import jquery from "./jquery";
 import lodash from "./lodash";
+import bootstrap from "./bootstrap";
 
 type OutdatedScanner = (body: string) => Promise<ScanResult>;
 
@@ -15,7 +16,7 @@ export default async function detectOutdatedLibraries(
     url: URL,
     body: string
 ): Promise<ScanResult> {
-    const outdatedScanners: OutdatedScanner[] = [jquery, lodash];
+    const outdatedScanners: OutdatedScanner[] = [jquery, lodash, bootstrap];
     const scanResults = await runOutdatedScanners(outdatedScanners, body);
 
     return compileOutdatedResults(scanResults);

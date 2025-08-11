@@ -62,30 +62,64 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
  * @param url The target URL to scan
  * @returns Array of scan results with severity and findings
  */
-export default async function runSecurityScans(url: URL): Promise<VulnerabilityResult[]> {
+export default async function runSecurityScans(url: URL): Promise<{result: VulnerabilityResult[], error: string | null}> {
     // Fetch target resources once to avoid redundant requests
-    const [body, headers] = await fetchTargetResources(url);
+    const [body, headers, redirected] = await fetchTargetResources(url);
+
+    // If the URL was redirected to a different domain, log a warning
+    if (redirected) {
+        console.warn(`Warning: URL redirected to a different domain: ${url.origin}`);
+        return {
+            result: [],
+            error: 'URL redirected to a different domain'
+        }
+    }
+
     if (!body || !headers) {
         console.error('Failed to retrieve target resources', { url: url.origin });
-        return [];
+        return {
+            result: [],
+            error: 'Failed to retrieve target resources'
+        };
     }
 
     // Execute all scans in parallel
-    const scanResults = await executeAllScans(url, body, headers);
+    const scanResults = await executeAllScans(url, body, headers).catch(error => {
+        console.error('Error executing scans:', error);
+        return null;
+    });
 
-    return formatResults(scanResults);
+    if (!scanResults) {
+        return {
+            result: [],
+            error: 'Error executing scans'
+        };
+    }
+
+    return {
+        result: formatResults(scanResults),
+        error: null
+    };
 }
 
 /**
  * Fetches the target website's body content and headers
  */
-async function fetchTargetResources(url: URL): Promise<[string | null, Headers | null]> {
+async function fetchTargetResources(url: URL): Promise<[string | null, Headers | null, boolean]> {
     try {
         const response = await fetch(url.origin);
-        return await Promise.all([response.text(), response.headers]);
+
+        // test if the url is being redirected to a different domain (ignore www subdomain)
+        const responseUrl = new URL(response.url);
+        if (responseUrl.origin !== url.origin && responseUrl.hostname.replace(/^www\./, '') !== url.hostname.replace(/^www\./, '')) {
+            console.warn(`Warning: URL redirected to a different domain: ${responseUrl.href}`);
+            return [null, null, true];
+        }
+
+        return await Promise.all([response.text(), response.headers, false]);
     } catch (error) {
         console.error('Resource fetch failed:', error);
-        return [null, null];
+        return [null, null, true];
     }
 }
 
