@@ -9,7 +9,6 @@ import httpUpgrade from "./scans/httpUpgrade";
 import emailDetector from "./scans/emailDetector";
 import exposedConfigs from "./scans/exposedConfigs";
 import ssh from "./scans/ssh";
-import { scan } from "./handler";
 
 /**
  * Vulnerability severity levels:
