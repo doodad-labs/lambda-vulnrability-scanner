@@ -63,7 +63,7 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
         severity: 'critical'
     },
     {
-        name: 'SSH Port Check',
+        name: 'SSH Configuration',
         func: ssh,
         severity: 'high'
     }

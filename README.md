@@ -12,6 +12,8 @@ A **serverless AWS Lambda function** designed to scan web applications for secur
 | Outdated Software        | Detects outdated software versions with known vulnerabilities.              | `moderate` | [`outdated/`](./src/scans/outdated) |
 | HTTP Upgrade             | Verifies if the site enforces HTTPS by redirecting HTTP traffic.            | `high`     | [`httpupgrade.ts`](./src/scans/httpupgrade.ts) |
 | Email Detector           | Scrape for non obfuscated email, showing emails exposed to bots.            | `minor`    | [`emaildetector.ts`](./src/scans/emaildetector.ts) |
+| Exposed Configurations   | Fuzzes for commonly exposed config paths.                                   | `high`     | [`exposedConfigs.ts`](./src/scans/exposedConfigs.ts) |
+| SSH Configuration        | Scans for open ssh port, ssh version, authentication options, common creds  | `high/critical` | [`ssh.ts`](./src/scans/ssh.ts) |
 
 ## **Tech Stack**  
 
