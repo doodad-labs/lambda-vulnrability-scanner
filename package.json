@@ -4,7 +4,7 @@
         "clean": "rimraf dist",
         "dev": "npm run clean && concurrently \"tsc --watch\" \"node scripts/watch-clean.js\" \"serverless dev\" -n \"ts,rf,λf\"",
         "lint": "eslint src/",
-        "deploy": "npm run clean && npm run build && serverless deploy"
+        "deploy": "npm run lint && npm run clean && npm run build && serverless deploy"
     },
     "devDependencies": {
         "@eslint/js": "^9.33.0",
@@ -23,7 +23,7 @@
         "serverless": "^4.18.0",
         "ts-jest": "^29.4.1",
         "typescript": "^5.9.2",
-        "typescript-eslint": "^8.39.0"
+        "typescript-eslint": "8.39.1"
     },
     "dependencies": {
         "jsdom": "^26.1.0",
