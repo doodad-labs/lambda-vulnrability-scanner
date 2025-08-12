@@ -31,9 +31,24 @@ export const scan = async (event: Event) => {
     });
   }
 
+  const email = event.email;
+  let linked = false;
+
+  // Check if the email domain matches the target URL's hostname (Allows for more intense scans)
+  if (email) {
+    const emailDomain = email.split('@')[1];
+    if (emailDomain) {
+      const emailRootDomain = getRootDomain(emailDomain);
+      const targetRootDomain = getRootDomain(targetUrl.hostname);
+      if (emailRootDomain === targetRootDomain) {
+        linked = true;
+      }
+    }
+  }
+
   // Perform the scan
   const start = performance.now();
-  const { result, error } = await scanner(targetUrl).catch((error) => {
+  const { result, error } = await scanner(targetUrl, linked).catch((error) => {
     console.error('Scan failed:', error);
     return {
       result: [],
@@ -74,6 +89,21 @@ async function checkWebsiteAvailability(url: string): Promise<boolean> {
     console.error('Website availability check failed:', error);
     return false;
   }
+}
+
+/* 
+ * Extracts the root domain from a hostname
+ */
+function getRootDomain(hostname: string) {
+  // Remove www. if present
+  const domain = hostname.replace(/^www\./, '');
+  // Split by dots and get the last two parts (for most cases)
+  const parts = domain.split('.');
+  // Handle cases like co.uk (two-part TLDs)
+  if (parts.length > 2) {
+    return parts.slice(-2).join('.');
+  }
+  return domain;
 }
 
 /**

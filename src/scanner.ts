@@ -9,6 +9,7 @@ import httpUpgrade from "./scans/httpUpgrade";
 import emailDetector from "./scans/emailDetector";
 import exposedConfigs from "./scans/exposedConfigs";
 import ssh from "./scans/ssh";
+import { scan } from "./handler";
 
 /**
  * Vulnerability severity levels:
@@ -23,6 +24,7 @@ type ScanDefinition = {
     name: string;
     func: (url: URL, body: string, headers: Headers) => Promise<IndividualScanResult> | IndividualScanResult;
     severity: 'info' | 'minor' | 'moderate' | 'high' | 'critical';
+    needsLink?: boolean; // Indicates if the scan requires a link between domain and email
 };
 
 // Configure all available security scans
@@ -65,7 +67,8 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
     {
         name: 'SSH Configuration',
         func: ssh,
-        severity: 'high'
+        severity: 'high',
+        needsLink: true
     }
 ];
 
@@ -74,7 +77,7 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
  * @param url The target URL to scan
  * @returns Array of scan results with severity and findings
  */
-export default async function runSecurityScans(url: URL): Promise<{result: ScanResult[], error: string | null}> {
+export default async function runSecurityScans(url: URL, linked: boolean): Promise<{result: ScanResult[], error: string | null}> {
     // Fetch target resources once to avoid redundant requests
     const [body, headers, redirected] = await fetchTargetResources(url);
 
@@ -96,7 +99,7 @@ export default async function runSecurityScans(url: URL): Promise<{result: ScanR
     }
 
     // Execute all scans in parallel
-    const scanResults = await executeAllScans(url, body, headers).catch(error => {
+    const scanResults = await executeAllScans(url, body, headers, linked).catch(error => {
         console.error('Error executing scans:', error);
         return null;
     });
@@ -141,10 +144,13 @@ async function fetchTargetResources(url: URL): Promise<[string | null, Headers |
 async function executeAllScans(
     url: URL,
     body: string,
-    headers: Headers
+    headers: Headers,
+    linked: boolean
 ): Promise<PromiseSettledResult<IndividualScanResult>[]> {
     return Promise.allSettled(
-        SCAN_CONFIGURATIONS.map(scan => scan.func(url, body, headers))
+        SCAN_CONFIGURATIONS
+        .filter(scan => !scan.needsLink || linked) // Only run scans that don't require a link or if linked is true
+        .map(scan => scan.func(url, body, headers))
     );
 }
 

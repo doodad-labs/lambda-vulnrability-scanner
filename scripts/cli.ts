@@ -39,7 +39,7 @@ function duplicateRequestFinder(requests: string[]): string[] {
     return duplicates;
 }
 
-scanner(url).then((results) => {
+scanner(url, true).then((results) => {
     
     console.log(' ');
 

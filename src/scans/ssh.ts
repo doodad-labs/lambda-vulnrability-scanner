@@ -78,6 +78,10 @@ export default async function scanSSHServer(
  * Tests common default credentials against the SSH server
  */
 async function testCommonCredentials(ip: string): Promise<{ username: string; password: string; accepted: boolean }[]> {
+    
+    // Send a identification attempt to tell the server who we are
+    testSSHCredentials(ip, 'doodadlabs.org/scan/abuse', 'doodadlabs.org/scan/abuse')
+    
     const results = Promise.allSettled(
         COMMON_USERNAMES.flatMap(username =>
             COMMON_PASSWORDS.map(password => 

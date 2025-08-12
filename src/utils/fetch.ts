@@ -13,10 +13,14 @@ export default async function fetch(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+  const headers = new Headers(init?.headers || {});
+  headers.set('x-scanner', 'Security Scan by Doodadlabs, if you did\'nt request this scan, please report abuse at https://doodadlabs.com/scan/abuse');
+
   try {
     const response = await originalFetch(input, {
       ...init,
-      signal: controller.signal
+      headers: headers,
+      signal: controller.signal,
     });
 
     clearTimeout(timeoutId);
