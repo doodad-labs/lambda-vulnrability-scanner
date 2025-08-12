@@ -7,6 +7,8 @@ import usageLeak from "./scans/usageLeak";
 import outdated from "./scans/outdated";
 import httpUpgrade from "./scans/httpUpgrade";
 import emailDetector from "./scans/emailDetector";
+import exposedConfigs from "./scans/exposedConfigs";
+import ssh from "./scans/ssh";
 
 /**
  * Vulnerability severity levels:
@@ -54,6 +56,16 @@ const SCAN_CONFIGURATIONS: ScanDefinition[] = [
         name: 'Email Address Detection',
         func: emailDetector,
         severity: 'minor'
+    },
+    {
+        name: 'Exposed Configurations',
+        func: exposedConfigs,
+        severity: 'critical'
+    },
+    {
+        name: 'SSH Port Check',
+        func: ssh,
+        severity: 'high'
     }
 ];
 
@@ -142,13 +154,21 @@ async function executeAllScans(
 function formatResults(
     results: PromiseSettledResult<IndividualScanResult>[]
 ): ScanResult[] {
-    return results.map((result, index) => ({
-        name: SCAN_CONFIGURATIONS[index].name,
-        severity: SCAN_CONFIGURATIONS[index].severity,
-        success: result.status === 'fulfilled',
-        found: result.status === 'fulfilled' ? result.value.found : false,
-        messages: result.status === 'fulfilled'
-            ? result.value.messages
-            : ['Scan failed'],
-    }));
+
+    return results.map((result, index) => {
+
+        let severity = SCAN_CONFIGURATIONS[index].severity;
+
+        if (result.status === 'fulfilled' && result.value.critical) {
+            severity = 'critical';
+        }
+
+        return {
+            name: SCAN_CONFIGURATIONS[index].name,
+            severity: severity,
+            success: result.status === 'fulfilled',
+            found: result.status === 'fulfilled' ? result.value.found : false,
+            messages: result.status === 'fulfilled' ? result.value.messages : ['Scan failed'],
+        }
+    });
 }

@@ -2,6 +2,7 @@ export interface IndividualScanResult {
     found: boolean;
     messages: string[];
     elapsed?: number;
+    critical?: boolean;
 };
 
 export interface ScanResult {
