@@ -1,5 +1,5 @@
 import fetch from "../../utils/fetch";
-import { ScanResult } from '../../types/scans'
+import { IndividualScanResult } from '../../types/scans'
 
 type VersionCheckResult = {
     outdatedVersions: string[];
@@ -11,7 +11,7 @@ type VersionCheckResult = {
  */
 export default async function detectOutdatedJQuery(
     htmlContent: string
-): Promise<ScanResult> {
+): Promise<IndividualScanResult> {
     try {
         const jqueryScriptUrls = findJQueryScripts(htmlContent);
         const detectedVersions = await getJQueryVersions(jqueryScriptUrls);
@@ -129,7 +129,7 @@ async function fetchLatestJQueryVersion(): Promise<string | null> {
 /**
  * Formats the final detection results
  */
-function formatResults(check: VersionCheckResult): ScanResult {
+function formatResults(check: VersionCheckResult): IndividualScanResult {
     if (check.outdatedVersions.length === 0) {
         return {
             found: false,
